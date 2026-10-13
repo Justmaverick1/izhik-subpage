@@ -34,6 +34,7 @@ button { cursor: pointer; }
 .bar { max-width: 42rem; margin: 0 auto; padding: 0.75rem 1rem; }
 .brand-row { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
 .logo { height: 4.5rem; width: auto; max-width: 100%; }
+.rise { animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; width: 100%; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -43,6 +44,31 @@ button { cursor: pointer; }
 }
 .btn.solid { background: var(--moss); color: var(--moss-fg); border-color: transparent; }
 .btn:active { scale: 0.96; }
+.choice { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
+.play > * { animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.play > :nth-child(2) { animation-delay: 70ms; }
+.play > :nth-child(3) { animation-delay: 140ms; }
+.play > :nth-child(4) { animation-delay: 210ms; }
+.steps-in > li { animation: rise 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.steps-in > li:nth-child(2) { animation-delay: 40ms; }
+.steps-in > li:nth-child(3) { animation-delay: 80ms; }
+.steps-in > li:nth-child(4) { animation-delay: 120ms; }
+.steps-in > li:nth-child(5) { animation-delay: 160ms; }
+.steps-in > li:nth-child(6) { animation-delay: 200ms; }
+dialog.sheet[open] .qr-panel { animation: pop 250ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+dialog.sheet[open]::backdrop { animation: fade 250ms ease both; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .enter { max-width: 42rem; margin: 0 auto; padding: 2rem 1rem 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
 .stack { display: flex; flex-direction: column; gap: 0.75rem; }
 .eyebrow { margin: 0; color: var(--muted); font-size: 0.875rem; }
@@ -86,6 +112,8 @@ dialog.sheet::backdrop { background: rgba(8, 16, 14, 0.62); }
 }
 @media (prefers-reduced-motion: reduce) {
   .btn:active { scale: 1; }
+  .choice { transition: none; }
+  .rise, .play > *, .steps-in > li, dialog.sheet[open] .qr-panel, dialog.sheet[open]::backdrop { animation: none; }
 }
 
     </style>
@@ -1126,9 +1154,17 @@ function render() {
     list.append(item);
   });
   stepsSection.append(list);
+  if (!state.ready) {
+    logo.classList.add("rise");
+    actions.classList.add("rise");
+    main.classList.add("play");
+  } else {
+    list.classList.add("steps-in");
+  }
 
   main.append(info, devices, appsSection, stepsSection);
   app.replaceChildren(header, main);
+  state.ready = true;
 }
 
 function openQr() {
